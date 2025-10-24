@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Приложение - Стольная С.А. P3316 Вариант 6452</title>
+    <h:outputStylesheet name="css/style.css"/>
+    <h:outputScript name="js/script.js"/>
+</h:head>
+<h:body>
+    <div class="container">
+        <div class="header">
+            Стольная С.А. | Группа P3316 | Вариант 6452
+        </div>
+        
+        <h:messages globalOnly="true" styleClass="error-message" 
+                   infoClass="info" errorClass="error-text" 
+                   style="padding: 10px; margin: 10px 0;"/>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h3>Ввод параметров</h3>
+                <h:form id="pointForm">
+                    <div class="form-group">
+                        <label>X координата:</label>
+                        <div class="command-link-group">
+                            <h:commandLink value="-2" action="#{pointBean.setX(-2)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="-1.5" action="#{pointBean.setX(-1.5)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="-1" action="#{pointBean.setX(-1)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="-0.5" action="#{pointBean.setX(-0.5)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="0" action="#{pointBean.setX(0)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="0.5" action="#{pointBean.setX(0.5)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="1" action="#{pointBean.setX(1)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                            <h:commandLink value="1.5" action="#{pointBean.setX(1.5)}" styleClass="x-link">
+                                <f:ajax render="xDisplay"/>
+                            </h:commandLink>
+                        </div>
+                        <h:inputText id="xDisplay" value="#{pointBean.x}" style="display: none;"/>
+                        <h:message for="x" styleClass="error-message"/>
+                    </div>
+
+           <div class="form-group">
+               <label for="yInput">Y координата:</label>
+               <h:inputText id="yInput" value="#{pointBean.y}"
+                                   required="true" requiredMessage="Введите значение Y"
+                                   validatorMessage="Y должен быть числом от -5 до 3"
+                                   type="number" step="0.01" min="-5" max="3">
+                   <f:validateDoubleRange minimum="-5" maximum="3"/>
+               </h:inputText>
+               <h:message for="yInput" styleClass="error-message"/>
+           </div>
+
+                    <div class="form-group">
+                        <label for="rInput">Радиус R:</label>
+                        <h:inputText id="rInput" value="#{pointBean.r}" 
+                                   required="true" requiredMessage="Введите значение R"
+                                   validatorMessage="R должен быть числом от 2 до 5"
+                                   placeholder="3" type="number" step="0.01" min="2" max="5">
+                            <f:validateDoubleRange minimum="2" maximum="5"/>
+                        </h:inputText>
+                        <h:message for="rInput" styleClass="error-message"/>
+                    </div>
+
+                    <h:commandButton value="Проверить точку" 
+                                   action="#{pointBean.checkPoint}" 
+                                   styleClass="submit-btn" id="submitBtn">
+                        <f:ajax execute="@form" render="resultsTable"
+                                onevent="function(data) { if (data.status === 'success') { loadExistingPoints(); } }"/>
+                    </h:commandButton>
+                </h:form>
+            </div>
+
+            <div class="graph-section">
+                <h3>График области</h3>
+                <canvas id="graph" width="400" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="results-section" id="results-section">
+            <h3>Результаты проверки</h3>
+            <h:form>
+                <h:commandButton value="Очистить результаты" 
+                               action="#{resultsBean.clearResults}" 
+                               styleClass="submit-btn"
+                               style="max-width: 300px; margin-bottom: 15px;"
+                               rendered="#{not empty resultsBean.results}">
+                    <f:ajax execute="@form" render="resultsTable" 
+                            onevent="function(data) { if (data.status === 'success') { clearPoints(); } }"/>
+                </h:commandButton>
+            </h:form>
+            <h:dataTable id="resultsTable" value="#{resultsBean.results}" var="result" 
+                        styleClass="results-table" 
+                        headerClass="results-table-header"
+                        rowClasses="results-table-row">
+                <h:column>
+                    <f:facet name="header">X</f:facet>
+                    #{result.x}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Y</f:facet>
+                    #{result.y}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">R</f:facet>
+                    #{result.r}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Результат</f:facet>
+                    <span class="#{result.hit ? 'hit' : 'miss'}">
+                        #{result.hit ? 'Попадание' : 'Промах'}
+                    </span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Время запроса</f:facet>
+                    #{result.formattedRequestTime}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Время работы (мкс)</f:facet>
+                    #{result.scriptTime}
+                </h:column>
+            </h:dataTable>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <h:form>
+                    <h:commandButton value="← Вернуться на стартовую страницу" 
+                                   action="index" 
+                                   styleClass="back-link"
+                                   style="border: none;"/>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>

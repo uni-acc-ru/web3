@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: web3-postgres
+    environment:
+      POSTGRES_DB: web3db
+      POSTGRES_USER: web3user
+      POSTGRES_PASSWORD: web3pass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - web3-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U web3user -d web3db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web3-app:
+    build: .
+    container_name: web3-app
+    ports:
+      - "5001:5001"
+    environment:
+      - JAVA_OPTS=-Djava.net.preferIPv4Stack=true -Dserver.address=0.0.0.0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=web3db
+      - DB_USER=web3user
+      - DB_PASSWORD=web3pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - web3-network
+    command: ["./gradlew", "runTomcat"]
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  web3-network:
+    driver: bridge

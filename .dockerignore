@@ -1,0 +1,19 @@
+# Игнорируем ненужные файлы при сборке Docker образа
+.git
+.gitignore
+README.md
+*.md
+tomcat.5000/
+data/
+.local/
+*.log
+.DS_Store
+Thumbs.db
+
+# Игнорируем временные файлы Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+

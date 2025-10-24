@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'com.webapp'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = '8'
+targetCompatibility = '8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    providedCompile 'javax:javaee-web-api:7.0'
+
+    implementation 'com.sun.faces:jsf-api:2.2.20'
+    implementation 'com.sun.faces:jsf-impl:2.2.20'
+
+    implementation 'org.jboss.weld.servlet:weld-servlet:2.4.8.Final'
+
+    implementation 'org.hibernate:hibernate-core:5.4.32.Final'
+    implementation 'org.hibernate:hibernate-hikaricp:5.4.32.Final'
+
+    implementation 'org.postgresql:postgresql:42.2.24'
+    
+    implementation 'com.h2database:h2:1.4.200'
+
+    implementation 'javax.servlet:jstl:1.2'
+
+    implementation 'org.glassfish:javax.el:3.0.0'
+
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:8.5.73'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:8.5.73'
+}
+
+war {
+    archiveFileName = 'jsf-app.war'
+}
+
+task runTomcat(type: JavaExec) {
+    group = 'application'
+    description = 'Run embedded Tomcat server'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.webapp.server.Server'
+    
+    environment 'DATABASE_URL', System.getenv('DATABASE_URL')
+    environment 'PGHOST', System.getenv('PGHOST')
+    environment 'PGPORT', System.getenv('PGPORT')
+    environment 'PGDATABASE', System.getenv('PGDATABASE')
+    environment 'PGUSER', System.getenv('PGUSER')
+    environment 'PGPASSWORD', System.getenv('PGPASSWORD')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources', 'src/main/webapp']
+        }
+    }
+}
